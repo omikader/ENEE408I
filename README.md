@@ -1,2 +1,2 @@
 # ENEE408I
-Code for the autonomous robots project
+Code for the autonomous robot project

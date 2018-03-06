@@ -3,18 +3,18 @@
  */
 
 // Set pin numbers
-const int leftMotor1 = 12;
-const int leftMotor2 = 13;
-const int leftPWM = 3;
-const int leftMotorInitSpeed = 50; // (25% = 64; 50% = 127; 75% = 191; 100% = 255)
+const int leftMotor1 = 13;
+const int leftMotor2 = 12;
+const int leftPWM = 5;
+const int leftMotorInitSpeed = 127; // (25% = 64; 50% = 127; 75% = 191; 100% = 255)
 
-const int rightMotor1 = 7;
-const int rightMotor2 = 8;
-const int rightPWM = 5;
-const int rightMotorInitSpeed = 32; // (25% = 64; 50% = 127; 75% = 191; 100% = 255)
+const int rightMotor1 = 8;
+const int rightMotor2 = 7;
+const int rightPWM = 3;
+const int rightMotorInitSpeed = 127; // (25% = 64; 50% = 127; 75% = 191; 100% = 255)
 
-const int leftPingPin = 10;
-const int rightPingPin = 11;
+const int leftPingPin = 9;
+const int rightPingPin = 10;
 
 const int MAX_DISTANCE_CM = 30;
 

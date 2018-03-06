@@ -1,7 +1,7 @@
 import cv2
 
 def main():
-    cascade_path = 'lbpcascade_frontalface.xml'
+    cascade_path = './data/lbpcascade_frontalface.xml'
     face_cascade = cv2.CascadeClassifier(cascade_path)
     video_capture = cv2.VideoCapture(1)
 
@@ -20,8 +20,8 @@ def main():
     video_capture.release()
     cv2.destroyAllWindows()
 
-def detect_faces(casc_path, gray, scaleFactor=1.1, minNeighbors=5):
-    return casc_path.detectMultiScale(
+def detect_faces(cascade, gray, scaleFactor=1.1, minNeighbors=5):
+    return cascade.detectMultiScale(
         gray,
         scaleFactor,
         minNeighbors

@@ -26,8 +26,11 @@
 #define OBSTACLE_FORWARD 3
 #define OBSTACLE_ALL 4
 
-int inAL = 13; //yellow
-int inBL = 12; //green
+//Delay
+#define delayLow 50
+#define delayHigh 200
+int inAL = 12; //yellow
+int inBL = 13; //green
 int speedL = 5; //purple (pwm1)
 // green, black go to ground, red to 5V
 int inAR = 7; //yellow
@@ -35,26 +38,24 @@ int inBR = 8; //green
 int speedR = 6; //purple (pwm2)
 int pingR = 10; // purple
 int pingL = 9; // yellow
-int pingM = 2; // yellow
+int pingM = 3; // yellow
 int surveryDirection = RIGHT;
 
 // dir_speed_wheel
-int forward_fast_R = 150; 
-int forward_fast_L = 150; 
-int forward_med_R = 100; 
-int forward_med_L = 100; 
-int forward_slow_R = 50; 
-int forward_slow_L = 50;
- 
-int left_slow_R = 100; 
-int left_slow_L = 50; 
-int left_fast_R = 150; 
-int left_fast_L = 50; 
-
+int forward_fast_R = 50; 
+int forward_fast_L = 40; 
+int forward_med_R = 50; 
+int forward_med_L = 42; 
+int forward_slow_R = 30; 
+int forward_slow_L = 26; 
+int left_slow_R = 70; 
+int left_slow_L = 42; 
+int left_fast_R = 90; 
+int left_fast_L = 42; 
 int right_slow_R = 50;
-int right_slow_L = 100;
+int right_slow_L = 60;
 int right_fast_R = 50; 
-int right_fast_L = 150; 
+int right_fast_L = 80; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -212,6 +213,7 @@ void loop() {
   int command, response;
   long inchesL, inchesR, inchesM;
   get_ping_data(&inchesL, &inchesR, &inchesM);
+  command = FF;
   //readSimple(&command);
   
   // No Obstacle
@@ -228,64 +230,64 @@ void loop() {
     Serial.println(response);
     return;
   }
+  */
   
   // Obstacle only Straight Ahead
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
     reverse();
-    delay(600);
+    delay(delayHigh);
     while (inchesL < 10 || inchesM < 8 || inchesR < 10){
       switch(command){     
         case FL:
           turnLeft();
-          delay(300);
+          delay(delayLow);
           surveryDirection = LEFT;
           response = 1;
           break;
         case FF:
           turnLeft();
-          delay(300);
+          delay(delayLow);
           surveryDirection = LEFT;
           response = 2;
           break;
         case FR:
           turnRight();
-          delay(300);
+          delay(delayLow);
           surveryDirection = RIGHT;
           response = 2;
           break;
         case SL:
           turnLeft();
-          delay(300);
+          delay(delayLow);
           surveryDirection = LEFT;
           response = 2;
         case SR:
           turnRight();
-          delay(300);
+          delay(delayHigh);
           surveryDirection = RIGHT;
           response = 2;
           break;
         case SB:
           reverse();
-          delay(300);
+          delay(delayHigh);
           response = OBSTACLE_FORWARD;
           break;
         case NA:
           turnRight();
-          delay(300);
+          delay(delayHigh);
           response = OBSTACLE_FORWARD;   
           break;
       }
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
   } 
-  */
   // Obstacle to the Left
   else if (inchesL < 10 && inchesR >= 10) {
     reverse();
-    delay(600);
+    delay(delayHigh);
     while (inchesL < 10 || inchesR < 10){
       turnRight();
-      delay(300);
+      delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
     surveryDirection = RIGHT;
@@ -295,10 +297,10 @@ void loop() {
   // Obstacle to the Right  
   else if (inchesL >= 10 && inchesR < 10) {
     reverse();
-    delay(600);
+    delay(delayHigh);
     while (inchesL < 10 || inchesR < 10){
       turnLeft();
-      delay(300);
+      delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
     surveryDirection = LEFT;
@@ -308,10 +310,10 @@ void loop() {
   // Obstacle to the Left, Right and Middle
   else if (inchesL < 10 && inchesM < 8 && inchesR < 10) {
     reverse();
-    delay(600);
+    delay(delayHigh);
     while (inchesL < 10 || inchesM < 8 || inchesR < 10){
       turnLeft();
-      delay(300);
+      delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
     

@@ -13,7 +13,7 @@ The code for this project can be located under the `src/` subdirectory. In it yo
 
 ## Documentation
 
-Documentation regarding the project's overall goals and guidelines, along with our final report can be found under the `docs/` subdirectory.
+Documentation regarding the project's overall [goals and guidelines](docs/project_outline.pdf), along with our final report can be found under the `docs/` subdirectory.
 
 ## Demonstration
 

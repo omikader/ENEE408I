@@ -1,7 +1,7 @@
 import cv2
 
 def main():
-    cascade_path = './data/lbpcascade_frontalface.xml'
+    cascade_path = '../classifiers/lbpcascade_frontalface.xml'
     face_cascade = cv2.CascadeClassifier(cascade_path)
     video_capture = cv2.VideoCapture(1)
 

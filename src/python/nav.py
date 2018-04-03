@@ -8,12 +8,18 @@ import utils.arduino as au
 import face_recognition
 
 # Global Variables
-PORT = 'COM5'
+PORT = '/dev/ttyACM0'
 camera = cv2.VideoCapture(1)
 
 def main():
-    #s = au.connect(PORT)
-    
+    s = au.connect(PORT)
+    '''
+    res = ""
+    while res == "":
+	res = au.send(s,States.FL)
+    print res
+    '''
+    # Face Regions 0-128 FL; 128-256 SL; 256-384 FF; 384-512 SR; 512-640 FR;
     omar_image = face_recognition.load_image_file('img/omar.png')
     omar_face_encoding = face_recognition.face_encodings(omar_image)[0]
 
@@ -48,6 +54,9 @@ def main():
 
     while True:
         ret, frame = camera.read()
+	width, height = frame.shape[:2]
+	print width
+	print height
 
         # Resize frame to 1/4 size for faster processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)

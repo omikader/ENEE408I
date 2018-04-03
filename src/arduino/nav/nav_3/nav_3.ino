@@ -64,19 +64,19 @@ void setup() {
   pinMode(inAR, OUTPUT);
   pinMode(speedR, OUTPUT);
   pinMode(inBR, OUTPUT);
-  Serial.begin(9600);
-  //while (! Serial); // Wait for the serial to be ready
+  Serial.begin(115200);
+  while (! Serial); // Wait for the serial to be ready
 }
-/*
 void readSimple(int *command) {
   while (Serial.available() <= 0) {
     // do nothing
   }
   if (Serial.available() > 0) {
       *command = Serial.read() - '0';
+       Serial.println("Recieved");
   }
 }
-*/
+
 
 void turnSimple(int command) {
   switch (command) {
@@ -214,15 +214,15 @@ void loop() {
   long inchesL, inchesR, inchesM;
   get_ping_data(&inchesL, &inchesR, &inchesM);
   command = FF;
-  //readSimple(&command);
-  
+  readSimple(&command);
+  turnSimple(command);
+  /*
   // No Obstacle
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
-    //turnSimple(command);
-    //response = SUCCESS;
+    turnSimple(command);
+    response = SUCCESS;
   } 
-  /*
   // Object is what we are trying to follow
   else if (command == STOP){
     halt();
@@ -230,7 +230,6 @@ void loop() {
     Serial.println(response);
     return;
   }
-  */
   
   // Obstacle only Straight Ahead
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
@@ -320,6 +319,7 @@ void loop() {
     surveryDirection = LEFT;
     response = OBSTACLE_ALL;    
   }
+  */
   
   Serial.println(response);
 }

@@ -5,11 +5,11 @@ def connect(port):
     conn = False
     while not conn:
         try:
-            s = Serial(port=port, baudrate=9600, timeout=5)
+            s = serial.Serial(port=port, baudrate=115200, timeout=5)
             conn = True
         except:
             print('Attempting to connect to the Arduino...')
-            time.sleep(1)
+            sleep(1)
     return s
 
 def send(serial_obj, command):
@@ -17,7 +17,7 @@ def send(serial_obj, command):
     serial_obj.write(bytes(command))
     
     # Response is buffered, wait for response
-    time.sleep(2)
+    sleep(1)
     
     resp = serial_obj.read(serial_obj.inWaiting())
     return resp

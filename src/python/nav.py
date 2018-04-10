@@ -22,34 +22,8 @@ def main():
     print res
     '''
 
-    known_face_encodings, known_face_names = feu.get_face_encodings()
-
     # Face Regions 0-128 FL; 128-256 SL; 256-384 FF; 384-512 SR; 512-640 FR;
-    #omar_image = face_recognition.load_image_file('img/omar.png')
-    #omar_face_encoding = face_recognition.face_encodings(omar_image)[0]
-
-    #tauqir_image = face_recognition.load_image_file('img/tauqir.jpg')
-    #tauqir_face_encoding = face_recognition.face_encodings(tauqir_image)[0]
-
-    #renee_image = face_recognition.load_image_file('img/renee.png')
-    #renee_face_encoding = face_recognition.face_encodings(renee_image)[0]
-
-    #tauqir2_image = face_recognition.load_image_file('img/tauqir2.jpg')
-    #tauqir2_face_encoding = face_recognition.face_encodings(tauqir2_image)[0]
-
-    #known_face_encodings = [
-    #    omar_face_encoding,
-    #    tauqir_face_encoding,
-    #    renee_face_encoding,
-    #    tauqir2_face_encoding,
-    #]
-
-    #known_face_names = [
-    #    "Omar",
-    #    "Tauqir",
-    #    "Renee",
-    #    "Tauqir",
-    #]
+    known_face_encodings, known_face_names = feu.get_face_encodings()
 
     # Initialize some variables
     face_locations = []

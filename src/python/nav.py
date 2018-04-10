@@ -4,7 +4,7 @@ import cv2
 from utils.states import States
 
 import utils.arduino as au
-import utils.face_encodings as feu
+import utils.face_encoding as feu
 
 # import imutils
 import face_recognition

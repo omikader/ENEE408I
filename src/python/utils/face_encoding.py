@@ -4,7 +4,7 @@ import face_recognition
 def get_face_encodings():
     known_face_encodings = []
     known_face_names = []
-    path = '../img/'
+    path = 'img/'
 
     for fn in os.listdir(path):
         fn = path + fn 

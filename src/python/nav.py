@@ -15,12 +15,6 @@ camera = cv2.VideoCapture(1)
 
 def main():
     s = au.connect(PORT)
-    '''
-    res = ""
-    while res == "":
-	res = au.send(s,States.FL)
-    print res
-    '''
 
     # Face Regions 0-128 FL; 128-256 SL; 256-384 FF; 384-512 SR; 512-640 FR;
     known_face_encodings, known_face_names = feu.get_face_encodings()
@@ -33,9 +27,7 @@ def main():
 
     while True:
         ret, frame = camera.read()
-	width, height = frame.shape[:2]
-	print width
-	print height
+	#width, height = frame.shape[:2]
 
         # Resize frame to 1/4 size for faster processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -63,6 +55,9 @@ def main():
 
         process_this_frame = not process_this_frame
 
+        x = 0
+	y = 0
+
         # Display the results
         for (top, right, bottom, left), name in zip(face_locations, face_names):
             # Scale face locations back up since the frame was originally scaled down to 1/4 size
@@ -74,12 +69,32 @@ def main():
             # Draw a box around the face
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
+	    if name == 'Omar':
+	        x = (left + right)/2
+                y = (top + bottom)/2
+
             # Draw a label with a name below the face
             cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.cv.CV_FILLED)
             font = cv2.FONT_HERSHEY_DUPLEX
             cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
         cv2.imshow('Video', frame)
+
+        if x < 128:
+            command = States.FL
+	elif x < 256:
+            command = States.SL
+	elif x < 384:
+            command = States.FF
+	elif x < 512:
+            command = States.SR
+	elif x < 640:
+            command = States.FR
+        else:
+            command = States.STOP
+
+        print command
+        #res = au.send(s, command)
 
         # Hit 'q' on the keyboard to quit
         if cv2.waitKey(1) & 0xFF == ord('q'):

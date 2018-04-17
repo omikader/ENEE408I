@@ -6,7 +6,7 @@ import json
 from firebase import firebase
 firebase = firebase.FirebaseApplication('https://i-robot-f4a0c.firebaseio.com/', None)
 result = firebase.get('/', None)
-print result.values()[0].values()[0]
+result.values()[0].values()[0]
 #print result['OmarCommand']
 #current_request = json.load(result)
 #current_request['OmarCommand']

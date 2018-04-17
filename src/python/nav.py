@@ -93,12 +93,9 @@ def main():
         else:
             command = States.STOP
 
-        print command
-
         res = ""
         while res == "":
             res = au.send(s, command)
-        print res
             
         # Hit 'q' on the keyboard to quit
         if cv2.waitKey(1) & 0xFF == ord('q'):

@@ -215,6 +215,9 @@ void loop() {
   get_ping_data(&inchesL, &inchesR, &inchesM);
   command = FF;
   readSimple(&command);
+  
+  Serial.println(command);
+  
   turnSimple(command);
   /*
   // No Obstacle

@@ -14,7 +14,7 @@ def connect(port):
 
 def send(serial_obj, command):
     print('Instructing the Ardunio to %s ...' % command.name)
-    serial_obj.write(bytes(command))
+    serial_obj.write(bytes(command.value))
     
     # Response is buffered, wait for response
     sleep(1)

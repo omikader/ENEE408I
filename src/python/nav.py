@@ -1,33 +1,34 @@
-import numpy as np
 import cv2
-
-from utils.states import States
+import face_recognition
 
 import utils.arduino as au
 import utils.face_encoding as feu
-
-# import imutils
-import face_recognition
+from utils.states import States
 
 # Global Variables
 PORT = '/dev/ttyACM0'
 camera = cv2.VideoCapture(1)
 
 def main():
-    s = au.connect(PORT)
-
-    # Face Regions 0-128 FL; 128-256 SL; 256-384 FF; 384-512 SR; 512-640 FR;
-    known_face_encodings, known_face_names = feu.get_face_encodings()
+    # Connect to the Arduino
+    serial_obj = au.connect(PORT)
 
     # Initialize some variables
+    path = 'img/'
+    known_face_encodings, known_face_names = feu.get_encodings(path)
+
     face_locations = []
     face_encodings = []
     face_names = []
     process_this_frame = True
 
+    # Use frame width and heights to define face regions
+    width = camera.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
+    height = camera.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
+    regions = [float(i) * width / 5 for i in range(1, 6)]
+
     while True:
         ret, frame = camera.read()
-	#width, height = frame.shape[:2]
 
         # Resize frame to 1/4 size for faster processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -80,22 +81,22 @@ def main():
 
         cv2.imshow('Video', frame)
 
-        if x < 128:
+        if x < regions[0]:
             command = States.FL
-	elif x < 256:
+	elif x < regions[1]:
             command = States.SL
-	elif x < 384:
+	elif x < regions[2]:
             command = States.FF
-	elif x < 512:
+	elif x < regions[3]:
             command = States.SR
-	elif x < 640:
+	elif x < regions[4]:
             command = States.FR
         else:
             command = States.STOP
 
         res = ""
         while res == "":
-            res = au.send(s, command)
+            res = au.send(serial_obj, command)
             
         # Hit 'q' on the keyboard to quit
         if cv2.waitKey(1) & 0xFF == ord('q'):

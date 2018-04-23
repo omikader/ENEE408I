@@ -73,7 +73,7 @@ void readSimple(int *command) {
   }
   if (Serial.available() > 0) {
       *command = Serial.read() - '0';
-       Serial.println("Recieved");
+       Serial.println("Received");
   }
 }
 
@@ -219,7 +219,7 @@ void loop() {
   Serial.println(command);
   
   turnSimple(command);
-  /*
+
   // No Obstacle
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
@@ -322,7 +322,6 @@ void loop() {
     surveryDirection = LEFT;
     response = OBSTACLE_ALL;    
   }
-  */
   
   Serial.println(response);
 }

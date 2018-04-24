@@ -22,19 +22,19 @@ def draw_detections(img, rects, thickness = 1):
 if __name__ == '__main__':
 
     hog = cv2.HOGDescriptor()
-    #upperBody_cascade = cv2.CascadeClassifier('haarcascade_upperbody.xml')
+    upperBody_cascade = cv2.CascadeClassifier('../classifiers/haarcascade_upperbody.xml')
     #fullBody_cascade = cv2.CascadeClassifier('haarcascade_fullbody.xml')    
     #lowerBody_cascade = cv2.CascadeClassifier('haarcascade_lowerbody.xml')
-    hs_cascade = cv2.CascadeClassifier('HS.xml')    
+    #hs_cascade = cv2.CascadeClassifier('../classifiers/HS.xml')    
     #hog.setSVMDetector( cv2.HOGDescriptor_getDefaultPeopleDetector() )
-    cap=cv2.VideoCapture(0)
+    cap=cv2.VideoCapture(1)
     while True:
         _,frame=cap.read()
         h, w = frame.shape[:2]
         print(h)
         print(w)
-        arrBody = hs_cascade.detectMultiScale(frame)
-        if arrBody[0] != ():
+        arrBody = upperBody_cascade.detectMultiScale(frame)
+        if len(arrBody) > 0 and arrBody[0] != ():
             (x,y,w,h) = arrBody[0]
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,0,0),2)
         #found,w=hog.detectMultiScale(frame, winStride=(8,8), padding=(32,32), scale=1.1)

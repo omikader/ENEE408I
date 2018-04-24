@@ -6,12 +6,12 @@ import utils.arduino as au
 import utils.face_encoding as feu
 
 # Global Variables
-PORT = '/dev/ttyACM0'
+port = '/dev/ttyACM0'
 camera = cv2.VideoCapture(1)
 
 def main():
     # Connect to the Arduino
-    serial_obj = au.connect(PORT)
+    serial_obj = au.connect(port)
 
     # Initialize some variables
     path = '/home/nvidia/git/ENEE408I/src/python/img/'

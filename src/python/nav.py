@@ -1,9 +1,9 @@
 import cv2
 import face_recognition
 
+from utils.states import States
 import utils.arduino as au
 import utils.face_encoding as feu
-from utils.states import States
 
 # Global Variables
 PORT = '/dev/ttyACM0'
@@ -14,7 +14,7 @@ def main():
     serial_obj = au.connect(PORT)
 
     # Initialize some variables
-    path = 'img/'
+    path = '/home/nvidia/git/ENEE408I/src/python/img/'
     known_face_encodings, known_face_names = feu.get_encodings(path)
 
     face_locations = []

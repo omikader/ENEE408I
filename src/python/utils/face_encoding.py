@@ -6,9 +6,14 @@ def get_encodings(path):
     known_face_names = []
 
     for fn in os.listdir(path):
-        fn = path + fn 
+        fn = path + fn
         image = face_recognition.load_image_file(fn)
-        encoding = face_recognition.face_encodings(image)[0]
+
+	# Skip image if face not detected in photo
+	if not face_recognition.face_encodings(image):
+	    continue
+ 
+	encoding = face_recognition.face_encodings(image)[0]
         known_face_encodings.append(encoding)
 
         if 'omar' in fn:

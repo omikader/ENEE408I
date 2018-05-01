@@ -11,10 +11,10 @@ port = '/dev/ttyACM0'
 camera = cv2.VideoCapture(1)
 
 def main():
-    # Connect to the Arduino
+	# Connect to the Arduino
 	serial_obj = au.connect(port)
 
-    # Initialize some variables
+	# Initialize some variables
 	path = '/home/nvidia/git/ENEE408I/src/python/img/'
 	known_face_encodings, known_face_names = feu.get_encodings(path)
 
@@ -23,11 +23,10 @@ def main():
 	face_names = []
 	process_this_frame = True
 
-    # Use frame width and heights to define face regions
+	# Use frame width and heights to define face regions
 	width = camera.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
 	height = camera.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
 	regions = [float(i) * width / 5 for i in range(1, 6)]
-	
 
 	while True:
 		instruction = fbu.get_instruction()
@@ -73,42 +72,39 @@ def main():
 			left *= 4
 
 			# Draw a box around the face
-			print name
-
-            # cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
 			if name == 'Omar':
 				x = (left + right)/2
 				y = (top + bottom)/2
 
 		    # Draw a label with a name below the face
+		    cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.cv.CV_FILLED)
+		    font = cv2.FONT_HERSHEY_DUPLEX
+		    cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
 
-		    #cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.cv.CV_FILLED)
-		    #font = cv2.FONT_HERSHEY_DUPLEX
-		    #cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1)
+		cv2.imshow('Video', frame)
 
-			cv2.imshow('Video', frame)
+		if x < regions[0]:
+			command = States.FL
+		elif x < regions[1]:
+			command = States.SL
+		elif x < regions[2]:
+			command = States.FF
+		elif x < regions[3]:
+			command = States.SR
+		elif x < regions[4]:
+			command = States.FR
+		else:
+			command = States.STOP
 
-			if x < regions[0]:
-				command = States.FL
-			elif x < regions[1]:
-				command = States.SL
-			elif x < regions[2]:
-				command = States.FF
-			elif x < regions[3]:
-				command = States.SR
-			elif x < regions[4]:
-				command = States.FR
-			else:
-				command = States.STOP
+		res = ""
+		while res == "":
+			res = au.send(serial_obj, command)
 
-			res = ""
-			while res == "":
-				res = au.send(serial_obj, command)
-	
-			# Hit 'q' on the keyboard to quit
-			if cv2.waitKey(1) & 0xFF == ord('q'):
-				break
+		# Hit 'q' on the keyboard to quit
+		if cv2.waitKey(1) & 0xFF == ord('q'):
+			break
 
 	camera.release()
 	cv2.destroyAllWindows()

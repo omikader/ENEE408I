@@ -218,9 +218,9 @@ void loop() {
   
   Serial.println(command);
   
-  turnSimple(command);
+  //turnSimple(command);
   
-  /*
+ 
   // No Obstacle
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
@@ -239,7 +239,7 @@ void loop() {
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
     reverse();
     delay(delayHigh);
-    while (inchesL < 10 || inchesM < 8 || inchesR < 10){
+    if (inchesL < 10 || inchesM < 8 || inchesR < 10){
       switch(command){     
         case FL:
           turnLeft();
@@ -288,7 +288,7 @@ void loop() {
   else if (inchesL < 10 && inchesR >= 10) {
     reverse();
     delay(delayHigh);
-    while (inchesL < 10 || inchesR < 10){
+    if (inchesL < 10 || inchesR < 10){
       turnRight();
       delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
@@ -301,7 +301,7 @@ void loop() {
   else if (inchesL >= 10 && inchesR < 10) {
     reverse();
     delay(delayHigh);
-    while (inchesL < 10 || inchesR < 10){
+    if (inchesL < 10 || inchesR < 10){
       turnLeft();
       delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
@@ -314,7 +314,7 @@ void loop() {
   else if (inchesL < 10 && inchesM < 8 && inchesR < 10) {
     reverse();
     delay(delayHigh);
-    while (inchesL < 10 || inchesM < 8 || inchesR < 10){
+    if (inchesL < 10 || inchesM < 8 || inchesR < 10){
       turnLeft();
       delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
@@ -322,7 +322,7 @@ void loop() {
     
     surveryDirection = LEFT;
     response = OBSTACLE_ALL;    
-  }*/
+  }
   
   Serial.println(response);
 }

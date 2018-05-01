@@ -64,7 +64,7 @@ void setup() {
   pinMode(inAR, OUTPUT);
   pinMode(speedR, OUTPUT);
   pinMode(inBR, OUTPUT);
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (! Serial); // Wait for the serial to be ready
 }
 void readSimple(int *command) {
@@ -219,7 +219,8 @@ void loop() {
   Serial.println(command);
   
   turnSimple(command);
-
+  
+  /*
   // No Obstacle
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
@@ -321,7 +322,7 @@ void loop() {
     
     surveryDirection = LEFT;
     response = OBSTACLE_ALL;    
-  }
+  }*/
   
   Serial.println(response);
 }

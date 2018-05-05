@@ -13,10 +13,10 @@ camera = cv2.VideoCapture(1)
 
 # Connect to the Arduino
 port = '/dev/ttyACM0'
-#serial_obj = au.connect(port)
+serial_obj = au.connect(port)
 
 # Save face encodings from images of Team 8 members
-img_path = '/home/nvidia/git/ENEE408I/src/python/img/'
+img_path = '/home/nvidia/git/ENEE408I/img/'
 known_face_encodings, known_face_names = feu.get_encodings(img_path)
 
 # Use frame width and heights to define face regions
@@ -31,11 +31,11 @@ face_names = []
 hsv_lower = 0
 hsv_upper = 0
 process_this_frame = True
-prevCommand = States.FL
+prevCommand = States.NA
 
 while True:
     # Query Firebase for instruction
-    #instruction = fbu.get_instruction()
+    instruction = fbu.get_instruction()
 
     instruction = True
 
@@ -43,9 +43,9 @@ while True:
         # If no instruction available, spin idly
         x = 100000000
 
-    elif instruction: #instruction.keys()[0] == 'Follow':
+    elif instruction.keys()[0] == 'Follow':
         # Get name and encodings of person to be followed
-        follow = 'omar' # instruction['Follow']
+        follow = instruction['Follow']
         indices = [i for i, x in enumerate(known_face_names) if x == follow]
         follow_face_encodings = [known_face_encodings[i] for i in indices]
         follow_face_names = [known_face_names[i] for i in indices]
@@ -58,7 +58,7 @@ while True:
         rgb_small_frame = small_frame[:, :, ::-1]
 
         face_found = False
-
+        
         # Only process every other frame to save time
         if process_this_frame:
             # Find all the faces and face encodings in the current frame of video
@@ -78,7 +78,7 @@ while True:
 
         process_this_frame = not process_this_frame
         hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
-
+        
         if face_found:
             # Scale face locations back up since the frame was originally scaled down to 1/4 size
             top *= 4
@@ -88,7 +88,6 @@ while True:
 
             # Draw a box around the face
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-            imshow('Video', frame)
             x, y = (left + right)/2, (top + bottom)/2
 
             if not (hsv_lower and hsv_upper):
@@ -118,7 +117,7 @@ while True:
                     #cv2.circle(frame, (int(x),int(y)),int(radius), (0,255,255),2)
             else:
                 x = 1000000000
-
+    
         if x < regions[0]:
             command = States.FL
         elif x < regions[1]:
@@ -132,12 +131,12 @@ while True:
         else:
             command = States.NA
 
-    '''
     if prevCommand != command:
 	send_thread = threading.Thread(target=au.send, args=(serial_obj, command,))
 	send_thread.start()
 	prevCommand = command
-    '''
+
+    cv2.imshow('Video', frame)
 
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):

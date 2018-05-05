@@ -45,18 +45,24 @@ int surveryDirection = RIGHT;
 // dir_speed_wheel
 int forward_fast_R = 90/2; 
 int forward_fast_L = 100/2; 
-int forward_med_R = 90/2; 
-int forward_med_L = 100/2; 
+
+int forward_med_R = 70/2; 
+int forward_med_L = 80/2; 
+
 int forward_slow_R = 50/2; 
 int forward_slow_L = 60/2; 
+
 int left_slow_R = 50/2; 
-int left_slow_L = 60/2; 
+int left_slow_L = 30/2; 
+
 int left_fast_R = 50/2; 
-int left_fast_L = 60/2; 
-int right_slow_R = 80/2;
-int right_slow_L = 100/2;
-int right_fast_R = 80/2; 
-int right_fast_L = 100/2; 
+int left_fast_L = 30/2; 
+
+int right_slow_R = 20/2;
+int right_slow_L = 60/2;
+
+int right_fast_R = 20/2; 
+int right_fast_L = 60/2; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -66,7 +72,7 @@ void setup() {
   pinMode(speedR, OUTPUT);
   pinMode(inBR, OUTPUT);
   Serial.begin(9600);
-  //while (! Serial); // Wait for the serial to be ready
+  while (! Serial); // Wait for the serial to be ready
 }
 void readSimple(int *command) {
   while (Serial.available() <= 0) {
@@ -210,15 +216,15 @@ void turnLeft() {
     //Serial.println("turnRight: ");  
 
   setWheelDirectionHelper(HIGH,LOW,LOW,HIGH);
-  analogWrite(speedL, right_slow_L); //60
-  analogWrite(speedR, right_slow_R); //43  
+  analogWrite(speedL, forward_med_L); //60
+  analogWrite(speedR, forward_med_R); //43  
 }
 void turnRight() {
     //Serial.println("turnLeft: ");  
 
   setWheelDirectionHelper(LOW,HIGH,HIGH,LOW);
-  analogWrite(speedL, left_slow_L); //60
-  analogWrite(speedR, left_slow_R); //43
+  analogWrite(speedL, forward_med_L); //60
+  analogWrite(speedR, forward_med_R); //43
 }
 
 
@@ -232,7 +238,7 @@ void loop() {
   long inchesL, inchesR, inchesM;
   get_ping_data(&inchesL, &inchesR, &inchesM);
   command = FF;
-  //readSimple(&command);
+  readSimple(&command);
   //Serial.println(command);
   
   //turnSimple(command);

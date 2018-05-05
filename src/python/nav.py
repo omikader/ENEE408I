@@ -38,11 +38,11 @@ while True:
     #instruction = fbu.get_instruction()
 
     instruction = True
-    
+
     if not instruction:
         # If no instruction available, spin idly
         x = 100000000
-        
+
     elif instruction: #instruction.keys()[0] == 'Follow':
         # Get name and encodings of person to be followed
         follow = 'omar' # instruction['Follow']
@@ -58,7 +58,7 @@ while True:
         rgb_small_frame = small_frame[:, :, ::-1]
 
         face_found = False
-        
+
         # Only process every other frame to save time
         if process_this_frame:
             # Find all the faces and face encodings in the current frame of video
@@ -90,7 +90,7 @@ while True:
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
             imshow('Video', frame)
             x, y = (left + right)/2, (top + bottom)/2
-            
+
             if not (hsv_lower and hsv_upper):
                 roi = hsv[left:right, (top + 250):(bottom + 250)]
                 hue, sat, val = roi[:, :, 0], roi[:, :, 1], roi[:, :, 2]
@@ -117,30 +117,28 @@ while True:
                     ((x, y), radius) = cv2.minEnclosingCircle(c)
                     #cv2.circle(frame, (int(x),int(y)),int(radius), (0,255,255),2)
             else:
-                x = 1000000000  
-                    
+                x = 1000000000
+
         if x < regions[0]:
             command = States.FL
         elif x < regions[1]:
-	    command = States.SL
+            command = States.SL
         elif x < regions[2]:
-	    command = States.FF
+            command = States.FF
         elif x < regions[3]:
-	    command = States.SR
+            command = States.SR
         elif x < regions[4]:
-	    command = States.FR
+            command = States.FR
         else:
-	    command = States.NA
-            
+            command = States.NA
+
     '''
     if prevCommand != command:
 	send_thread = threading.Thread(target=au.send, args=(serial_obj, command,))
 	send_thread.start()
 	prevCommand = command
     '''
-    
-    #cv2.imshow("Frame",frame)
-    
+
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
 	break

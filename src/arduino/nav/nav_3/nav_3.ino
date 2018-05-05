@@ -58,11 +58,11 @@ int left_slow_L = 35/2;
 int left_fast_R = 30/2; 
 int left_fast_L = 70/2; 
 
-int right_slow_R = 15/2;
+int right_slow_R = 40/2;
 int right_slow_L = 35/2;
 
 int right_fast_R = 70/2; 
-int right_fast_L = 30/2; 
+int right_fast_L = 40/2; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -75,7 +75,7 @@ void setup() {
   while (! Serial); // Wait for the serial to be ready
 }
 void readSimple(int *command) {
-  while (Serial.available() <= 0) {
+  if (Serial.available() <= 0) {
     // do nothing
   }
   if (Serial.available() > 0) {
@@ -249,7 +249,7 @@ void loop() {
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
     turnSimple(command);
-    delay(delayHigh);
+    delay(delayLow);
     response = SUCCESS;
     get_ping_data(&inchesL, &inchesR, &inchesM);
   } 
@@ -293,13 +293,13 @@ void loop() {
           response = 2;
         case SR:
           turnRight();
-          delay(delayHigh);
+          delay(delayLow);
           surveryDirection = RIGHT;
           response = 2;
           break;
         case SB:
           reverse();
-          delay(delayHigh);
+          delay(delayLow);
           response = OBSTACLE_FORWARD;
           break;
         case NA:

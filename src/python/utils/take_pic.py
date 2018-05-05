@@ -1,23 +1,24 @@
 import cv2
 import sys
 
-def main():
-    camera = cv2.VideoCapture(1)
+camera = cv2.VideoCapture(1)
+ramp_frames = 30
 
-    ramp_frames = 30
-
+while(True):
     for i in xrange(ramp_frames):
-        ret, frame = camera.read()
+	ret, frame = camera.read()
 
-    while(True):
-        cv2.imshow('image', frame)
-        if cv2.waitKey(1) & 0xFF == ord('y'):
-            cv2.imwrite('../img/' + sys.argv[1], frame)
-            cv2.destroyAllWindows()
-            break
+    cv2.imshow('image', frame)
+    k = cv2.waitKey(0)
+    if k == ord('y'):
+        cv2.imwrite('../img/' + sys.argv[1], frame)
+        cv2.destroyAllWindows()
+        break
+    elif k == ord('n'):
+	cv2.destroyAllWindows()
+    elif k == ord('q'):
+        cv2.destroyAllWindows()
+        break
 
-    camera.release()
-
-if __name__ == "__main__":
-    main()
+camera.release()
 

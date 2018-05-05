@@ -27,8 +27,8 @@
 #define OBSTACLE_ALL 4
 
 //Delay
-#define delayLow 50
-#define delayHigh 200
+#define delayLow 200
+#define delayHigh 500
 int inAL = 12; //yellow
 int inBL = 13; //green
 int speedL = 5; //purple (pwm1)
@@ -36,26 +36,27 @@ int speedL = 5; //purple (pwm1)
 int inAR = 7; //yellow
 int inBR = 8; //green
 int speedR = 6; //purple (pwm2)
+
 int pingR = 10; // purple
-int pingL = 9; // yellow
-int pingM = 3; // yellow
+int pingL = 3; // yellow
+int pingM = 9; // yellow
 int surveryDirection = RIGHT;
 
 // dir_speed_wheel
-int forward_fast_R = 50; 
-int forward_fast_L = 40; 
-int forward_med_R = 50; 
-int forward_med_L = 42; 
-int forward_slow_R = 30; 
-int forward_slow_L = 26; 
-int left_slow_R = 70; 
-int left_slow_L = 42; 
-int left_fast_R = 90; 
-int left_fast_L = 42; 
-int right_slow_R = 50;
-int right_slow_L = 60;
-int right_fast_R = 50; 
-int right_fast_L = 80; 
+int forward_fast_R = 90/2; 
+int forward_fast_L = 100/2; 
+int forward_med_R = 90/2; 
+int forward_med_L = 100/2; 
+int forward_slow_R = 50/2; 
+int forward_slow_L = 60/2; 
+int left_slow_R = 50/2; 
+int left_slow_L = 60/2; 
+int left_fast_R = 50/2; 
+int left_fast_L = 60/2; 
+int right_slow_R = 80/2;
+int right_slow_L = 100/2;
+int right_fast_R = 80/2; 
+int right_fast_L = 100/2; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -65,7 +66,7 @@ void setup() {
   pinMode(speedR, OUTPUT);
   pinMode(inBR, OUTPUT);
   Serial.begin(9600);
-  while (! Serial); // Wait for the serial to be ready
+  //while (! Serial); // Wait for the serial to be ready
 }
 void readSimple(int *command) {
   while (Serial.available() <= 0) {
@@ -131,9 +132,9 @@ void turnSimple(int command) {
 int get_ping_helper(int ping ){
   pinMode(ping, OUTPUT);
   digitalWrite(ping, LOW);
-  delayMicroseconds(2);
+  delayMicroseconds(10);
   digitalWrite(ping, HIGH);
-  delayMicroseconds(5);
+  delayMicroseconds(10);
   digitalWrite(ping, LOW);
   pinMode(ping, INPUT);
   return pulseIn(ping, HIGH);
@@ -151,6 +152,15 @@ void get_ping_data(long* inchesL, long* inchesR, long* inchesM) {
   *inchesR = microsecondsToInches(durationR);
   *inchesL = microsecondsToInches(durationL);
   *inchesM = microsecondsToInches(durationM);
+
+  Serial.print("inchesL: ");  
+  Serial.print(*inchesL);
+  Serial.print("\tinchesM: ");
+  Serial.print(*inchesM);
+  Serial.print("\tinchesR: ");
+  Serial.print(*inchesR);
+  Serial.println("");
+
 }
 
 
@@ -185,25 +195,33 @@ void halt() {
   analogWrite(speedR, 0);
 }
 void reverse() {
+    //Serial.println("reverse: ");  
   setWheelDirectionHelper(LOW,HIGH,LOW,HIGH);
   analogWrite(speedL, forward_med_L); //60
   analogWrite(speedR, forward_med_R); //43 
 }
 void forward() {
+    //Serial.println("forward: ");  
   setWheelDirectionHelper(HIGH,LOW,HIGH,LOW);
   analogWrite(speedL, forward_med_L); //60
   analogWrite(speedR, forward_med_R); //43 
 }
-void turnRight() {
-  setWheelDirectionHelper(HIGH,LOW,LOW,HIGH);
-  analogWrite(speedL, forward_slow_L); //60
-  analogWrite(speedR, forward_slow_R); //43  
-}
 void turnLeft() {
-  setWheelDirectionHelper(LOW,HIGH,HIGH,LOW);
-  analogWrite(speedL, forward_slow_L); //60
-  analogWrite(speedR, forward_slow_R); //43
+    //Serial.println("turnRight: ");  
+
+  setWheelDirectionHelper(HIGH,LOW,LOW,HIGH);
+  analogWrite(speedL, right_slow_L); //60
+  analogWrite(speedR, right_slow_R); //43  
 }
+void turnRight() {
+    //Serial.println("turnLeft: ");  
+
+  setWheelDirectionHelper(LOW,HIGH,HIGH,LOW);
+  analogWrite(speedL, left_slow_L); //60
+  analogWrite(speedR, left_slow_R); //43
+}
+
+
 
 long microsecondsToInches(long microseconds) {
   return microseconds / 74 / 2;
@@ -214,14 +232,15 @@ void loop() {
   long inchesL, inchesR, inchesM;
   get_ping_data(&inchesL, &inchesR, &inchesM);
   command = FF;
-  readSimple(&command);
-  
-  Serial.println(command);
+  //readSimple(&command);
+  //Serial.println(command);
   
   //turnSimple(command);
   
- 
+  
+
   // No Obstacle
+  
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
     turnSimple(command);
@@ -237,6 +256,7 @@ void loop() {
   
   // Obstacle only Straight Ahead
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
+    Serial.println("Obstacle only Straight Ahead");
     reverse();
     delay(delayHigh);
     if (inchesL < 10 || inchesM < 8 || inchesR < 10){
@@ -286,22 +306,25 @@ void loop() {
   } 
   // Obstacle to the Left
   else if (inchesL < 10 && inchesR >= 10) {
+    Serial.println("Obstacle to the Left");
     reverse();
     delay(delayHigh);
-    if (inchesL < 10 || inchesR < 10){
+    while (inchesL < 10 || inchesR < 10){
       turnRight();
-      delay(delayLow);
+      delay(delayLow);     
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
+
     surveryDirection = RIGHT;
     response = OBSTACLE_LEFT; 
   }
  
   // Obstacle to the Right  
   else if (inchesL >= 10 && inchesR < 10) {
+    Serial.println("Obstacle to the Right");
     reverse();
     delay(delayHigh);
-    if (inchesL < 10 || inchesR < 10){
+    while (inchesL < 10 || inchesR < 10){
       turnLeft();
       delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
@@ -312,10 +335,13 @@ void loop() {
   
   // Obstacle to the Left, Right and Middle
   else if (inchesL < 10 && inchesM < 8 && inchesR < 10) {
+    Serial.println("Obstacle to the Left, Right and Middle");
     reverse();
     delay(delayHigh);
-    if (inchesL < 10 || inchesM < 8 || inchesR < 10){
-      turnLeft();
+    delay(delayHigh);
+
+    while (inchesL < 10 || inchesM < 10 || inchesR < 10){
+      turnRight();
       delay(delayLow);
       get_ping_data(&inchesL, &inchesR, &inchesM);
     }
@@ -324,5 +350,6 @@ void loop() {
     response = OBSTACLE_ALL;    
   }
   
-  Serial.println(response);
+  
+  //Serial.println(response);
 }

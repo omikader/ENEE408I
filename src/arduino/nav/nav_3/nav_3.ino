@@ -52,17 +52,17 @@ int forward_med_L = 80/2;
 int forward_slow_R = 50/2; 
 int forward_slow_L = 60/2; 
 
-int left_slow_R = 50/2; 
-int left_slow_L = 30/2; 
+int left_slow_R = 15/2; 
+int left_slow_L = 35/2; 
 
-int left_fast_R = 50/2; 
-int left_fast_L = 30/2; 
+int left_fast_R = 30/2; 
+int left_fast_L = 70/2; 
 
-int right_slow_R = 20/2;
-int right_slow_L = 60/2;
+int right_slow_R = 15/2;
+int right_slow_L = 35/2;
 
-int right_fast_R = 20/2; 
-int right_fast_L = 60/2; 
+int right_fast_R = 70/2; 
+int right_fast_L = 30/2; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -89,7 +89,7 @@ void turnSimple(int command) {
   switch (command) {
     case NA:
       setWheelDirection(surveryDirection);
-      setWheelSpeed(forward_slow_L, forward_slow_R);
+      setWheelSpeed(right_slow_L, right_slow_R);
       break;
     case FL:
       setWheelDirection(FORWARD);
@@ -98,11 +98,11 @@ void turnSimple(int command) {
     break;
     case FF:
       setWheelDirection(FORWARD);
-      setWheelSpeed(right_fast_L, right_fast_R);
+      setWheelSpeed(forward_fast_L, forward_fast_R);
     break;
     case FR:
       setWheelDirection(FORWARD);
-      setWheelSpeed(forward_fast_L, forward_fast_R);
+      setWheelSpeed(right_fast_L, right_fast_R);
       surveryDirection = RIGHT;
     break;
     case FB:
@@ -183,9 +183,9 @@ void setWheelDirection(int direction) {
     setWheelDirectionHelper(HIGH,LOW,HIGH,LOW);
   else if (direction == REVERSE)
     setWheelDirectionHelper(LOW,HIGH,LOW,HIGH);
-  else if (direction == LEFT)
-    setWheelDirectionHelper(LOW,HIGH,HIGH,LOW);
   else if (direction == RIGHT)
+    setWheelDirectionHelper(LOW,HIGH,HIGH,LOW);
+  else if (direction == LEFT)
     setWheelDirectionHelper(HIGH,LOW,LOW,HIGH);
 }
 
@@ -237,7 +237,6 @@ void loop() {
   int command, response;
   long inchesL, inchesR, inchesM;
   get_ping_data(&inchesL, &inchesR, &inchesM);
-  command = FF;
   readSimple(&command);
   //Serial.println(command);
   
@@ -250,10 +249,12 @@ void loop() {
   if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
   { 
     turnSimple(command);
+    delay(delayHigh);
     response = SUCCESS;
+    get_ping_data(&inchesL, &inchesR, &inchesM);
   } 
   // Object is what we are trying to follow
-  else if (command == STOP){
+  if (command == STOP){
     halt();
     response = FOUND;
     Serial.println(response);

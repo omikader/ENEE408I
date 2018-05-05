@@ -15,10 +15,4 @@ def connect(port):
 def send(serial_obj, command):
     print('Instructing the Arduino to %s ...' % command.name)
     serial_obj.write(bytes(command.value))
-    
-    # Response is buffered, wait for response
-    sleep(1)
-    
-    #resp = serial_obj.read(8)
-    #return resp
 

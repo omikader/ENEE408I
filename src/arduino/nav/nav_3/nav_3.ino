@@ -52,17 +52,17 @@ int forward_med_L = 80/2;
 int forward_slow_R = 50/2; 
 int forward_slow_L = 60/2; 
 
-int left_slow_R = 15/2; 
-int left_slow_L = 35/2; 
+int left_slow_R = 30/2; 
+int left_slow_L = 70/2; 
 
 int left_fast_R = 30/2; 
-int left_fast_L = 70/2; 
+int left_fast_L = 90/2; 
 
-int right_slow_R = 40/2;
-int right_slow_L = 35/2;
+int right_slow_R = 70/2;
+int right_slow_L = 30/2;
 
-int right_fast_R = 70/2; 
-int right_fast_L = 40/2; 
+int right_fast_R = 90/2; 
+int right_fast_L = 30/2; 
 
 void setup() {  
   pinMode(inAL, OUTPUT);
@@ -241,6 +241,7 @@ void loop() {
   //Serial.println(command);
   
   //turnSimple(command);
+  //command = FR;
   
   
 

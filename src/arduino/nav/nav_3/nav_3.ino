@@ -246,22 +246,15 @@ void loop() {
   
 
   // No Obstacle
-  
-  if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) 
-  { 
+  if (command == STOP){
+    halt();
+    Serial.println(response);
+  } else if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) { 
     turnSimple(command);
     delay(delayLow);
     response = SUCCESS;
     get_ping_data(&inchesL, &inchesR, &inchesM);
-  } 
-  // Object is what we are trying to follow
-  if (command == STOP){
-    halt();
-    response = FOUND;
-    Serial.println(response);
-    return;
-  }
-  
+  }   
   // Obstacle only Straight Ahead
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
     Serial.println("Obstacle only Straight Ahead");

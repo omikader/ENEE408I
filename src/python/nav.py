@@ -1,6 +1,7 @@
 import cv2
 import face_recognition
 import numpy as np
+import requests
 import states
 import tplibutils
 
@@ -133,11 +134,23 @@ while True:
             command = states.States.FR
         else:
             command = states.States.NA
-
+    
+    sentTemp = ""
     # Send command to the Arduino only if state has changed
     if prev_command != command:
-        resp = tplibutils.send(serial_obj, command)
-        print resp
+        temp = tplibutils.send(serial_obj, command)
+        print temp
+        report = {}
+        report['temperature'] = temp
+        if float(temp) < 60 and sentTemp == "" or sentTemp == "HOT" :
+            report['extreme'] = 'COLD'
+            sentTemp = "COLD"
+            requests.post('https://maker.ifttt.com/use/bM5YJkdQHK8RgoS6K6f4na', data=report)
+        elif float(temp) > 90 and sentTemp == "" or sentTemp == "COLD":
+            print 'Got hot!'
+            report['extreme'] = 'HOT'
+            sentTemp = "HOT"
+            requests.post('https://maker.ifttt.com/use/bM5YJkdQHK8RgoS6K6f4na', data=report)
         prev_command = command
 
     # Display results on video frame

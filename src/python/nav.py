@@ -9,7 +9,7 @@ camera = cv2.VideoCapture(1)
 
 # Connect to the Arduino
 port = '/dev/ttyACM0'
-#serial_obj = tplibutils.connect(port)
+serial_obj = tplibutils.connect(port)
 
 # Save face encodings from images of Team 8 members
 img_path = '/home/nvidia/git/ENEE408I/img/'
@@ -135,8 +135,9 @@ while True:
             command = states.States.NA
 
     # Send command to the Arduino only if state has changed
-    if prevCommand != command:
-        tplibutils.send(serial_obj, command)
+    if prev_command != command:
+        resp = tplibutils.send(serial_obj, command)
+        print resp
         prev_command = command
 
     # Display results on video frame

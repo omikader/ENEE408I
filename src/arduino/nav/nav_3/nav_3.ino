@@ -172,13 +172,13 @@ void get_ping_data(long* inchesL, long* inchesR, long* inchesM) {
   *inchesL = microsecondsToInches(durationL);
   *inchesM = microsecondsToInches(durationM);
 
-  Serial.print("inchesL: ");  
-  Serial.print(*inchesL);
-  Serial.print("\tinchesM: ");
-  Serial.print(*inchesM);
-  Serial.print("\tinchesR: ");
-  Serial.print(*inchesR);
-  Serial.println("");
+  //Serial.print("inchesL: ");  
+  //Serial.print(*inchesL);
+  //Serial.print("\tinchesM: ");
+  //Serial.print(*inchesM);
+  //Serial.print("\tinchesR: ");
+  //Serial.print(*inchesR);
+  //Serial.println("");
 
 }
 
@@ -261,7 +261,7 @@ void loop() {
   // No Obstacle
   if (command == STOP){
     halt();
-    Serial.println(response);
+    //Serial.println(response);
   } else if (inchesL >= 10 && inchesR >= 10 && inchesM >= 8) { 
     turnSimple(command);
     delay(delayLow);
@@ -270,7 +270,7 @@ void loop() {
   }   
   // Obstacle only Straight Ahead
   else if (inchesL >= 10 && inchesM < 8 && inchesR >= 10) {
-    Serial.println("Obstacle only Straight Ahead");
+    //Serial.println("Obstacle only Straight Ahead");
     reverse();
     delay(delayHigh);
     if (inchesL < 10 || inchesM < 8 || inchesR < 10){
@@ -320,7 +320,7 @@ void loop() {
   } 
   // Obstacle to the Left
   else if (inchesL < 10 && inchesR >= 10) {
-    Serial.println("Obstacle to the Left");
+    //Serial.println("Obstacle to the Left");
     reverse();
     delay(delayHigh);
     while (inchesL < 10 || inchesR < 10){
@@ -335,7 +335,7 @@ void loop() {
  
   // Obstacle to the Right  
   else if (inchesL >= 10 && inchesR < 10) {
-    Serial.println("Obstacle to the Right");
+    //Serial.println("Obstacle to the Right");
     reverse();
     delay(delayHigh);
     while (inchesL < 10 || inchesR < 10){
@@ -349,7 +349,7 @@ void loop() {
   
   // Obstacle to the Left, Right and Middle
   else if (inchesL < 10 && inchesM < 8 && inchesR < 10) {
-    Serial.println("Obstacle to the Left, Right and Middle");
+    //Serial.println("Obstacle to the Left, Right and Middle");
     reverse();
     delay(delayHigh);
     delay(delayHigh);

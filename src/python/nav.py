@@ -21,23 +21,25 @@ frame_height = camera.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT)
 regions = [float(i) * frame_width / 5 for i in range(1, 6)]
 
 # Define starting values
-hsv_lower = 0
-hsv_upper = 0
 process_this_frame = True
 prev_command = states.States.STOP
+prev_guide = 'None'
 
 while True:
     # Query Firebase for instruction
-    #instruction = tplibutils.get_instruction()
-    instruction = True
+    instruction = tplibutils.get_instruction()
 
-    # If no instruction available, spin idly
     if not instruction:
         command = states.States.NA
+        
+    elif instruction.keys()[0] == 'Follow':
+        guide = instruction['Follow']
 
-    # If instruction is to follow, get name and encodings of person to follow
-    elif instruction: #instruction.keys()[0] == 'Follow':
-        guide = 'Omar' #instruction['Follow']
+        if guide != prev_guide:
+            hsv_upper = 0
+            hsv_lower = 0
+            prev_guide = guide
+        
         indices = [i for i, x in enumerate(known_face_names) if x == guide]
         guide_face_encodings = [known_face_encodings[i] for i in indices]
         found_guide = False
@@ -80,15 +82,15 @@ while True:
             left *= 4
 
             # Draw a box around the face
+            x = (left + right)/2
             cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
             cv2.rectangle(frame, (left, top + 250), (right, bottom + 250), (0, 255, 0), 2)
-            x = (left + right)/2
 
             # Define ROI (region of interest) on guide's shirt
             roi = hsv[(top + 250):(bottom + 250) , left:right]
             hue, sat, val = roi[:, :, 0], roi[:, :, 1], roi[:, :, 2]
 
-            # Define HSV color range of ROI
+            # Define HSV color range for given ROI
             h_mean, h_std = np.mean(hue), np.std(hue)
             s_mean, s_std = np.mean(sat), np.std(sat)
             v_mean, v_std = np.mean(val), np.std(val)
@@ -96,6 +98,7 @@ while True:
             hsv_upper = (h_mean + h_std, s_mean + s_std, v_mean + v_std)
 
         else:
+            
             if (hsv_lower and hsv_upper):
                 # Construct a mask and perform a series of dilations and
                 # erosions to remove any small blobs left in the mask
@@ -104,8 +107,7 @@ while True:
                 mask = cv2.dilate(mask, None, iterations=2)
                 
                 # Find contours in the mask
-                cnts = cv2.findContours(
-                    mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+                cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
                 # Only proceed if at least one contour was found
                 if len(cnts) > 0:
@@ -113,10 +115,9 @@ while True:
                     # minimum enclosing circle
                     c = max(cnts, key=cv2.contourArea)
                     ((x, y), radius) = cv2.minEnclosingCircle(c)
-                    cv2.circle(
-                        frame, (int(x),int(y)), int(radius), (0,255,255), 2)
+                    cv2.circle(frame, (int(x),int(y)), int(radius), (0,255,255), 2)
             else:
-                x = 1000000000
+                command = states.States.NA
 
         # Set speed and direction state based on position of x coordinate within
         # the frame
@@ -134,9 +135,9 @@ while True:
             command = states.States.NA
 
     # Send command to the Arduino only if state has changed
-    #if prevCommand != command:
-        #tplibutils.send(serial_obj, command)
-        #prev_command = command
+    if prevCommand != command:
+        tplibutils.send(serial_obj, command)
+        prev_command = command
 
     # Display results on video frame
     cv2.imshow('Video', frame)

@@ -1,20 +1,26 @@
 import cv2
 import face_recognition
 import numpy as np
-import requests
-import states
-import tplibutils
+import pyfttt
+
+import utils.arduino as arduino
+import utils.face_rec as face_rec
+import utils.fire_base as fire_base
+import utils.states as states
 
 # Define web camera
 camera = cv2.VideoCapture(1)
 
 # Connect to the Arduino
-port = '/dev/ttyACM0'
-serial_obj = tplibutils.connect(port)
+PORT = '/dev/ttyACM0'
+serial_obj = arduino.connect(PORT)
+
+# Define IFTTT API key
+IFTTT_API_KEY = 'cKtT3pCq0wNZZNV1lHXmU8'
 
 # Save face encodings from images of Team 8 members
-img_path = '/home/nvidia/git/ENEE408I/img/'
-known_face_encodings, known_face_names = tplibutils.get_encodings(img_path)
+IMG_PATH = '/home/nvidia/git/ENEE408I/img/'
+known_face_encodings, known_face_names = face_rec.get_encodings(IMG_PATH)
 
 # Use frame width and heights to define face regions
 frame_width = camera.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH)
@@ -23,15 +29,32 @@ regions = [float(i) * frame_width / 5 for i in range(1, 6)]
 
 # Define starting values
 process_this_frame = True
-prev_command = states.States.STOP
-prev_guide = 'None'
+prev_command = states.States.NA
+command = states.States.NA
+prev_guide = 'Stop'
 
 while True:
+    # Send command to the Arduino only if state has changed
+    if prev_command != command:
+        temp = arduino.send(serial_obj, command)
+        temp = float(temp)
+        
+        if temp < 60:
+            pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
+        elif temp > 90:
+            pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
+            
+        prev_command = command
+    
     # Query Firebase for instruction
-    instruction = tplibutils.get_instruction()
+    instruction = fire_base.get_instruction()
+
+    # Extract frame from video feed
+    _, frame = camera.read()
 
     if not instruction:
         command = states.States.NA
+        continue
         
     elif instruction.keys()[0] == 'Follow':
         guide = instruction['Follow']
@@ -45,8 +68,7 @@ while True:
         guide_face_encodings = [known_face_encodings[i] for i in indices]
         found_guide = False
 
-        # Extract frame from video feed and resize for faster processing
-        ret, frame = camera.read()
+        # Resize video feed for faster processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
 
         # Convert the image from BGR color to RGB color
@@ -99,7 +121,6 @@ while True:
             hsv_upper = (h_mean + h_std, s_mean + s_std, v_mean + v_std)
 
         else:
-            
             if (hsv_lower and hsv_upper):
                 # Construct a mask and perform a series of dilations and
                 # erosions to remove any small blobs left in the mask
@@ -119,6 +140,7 @@ while True:
                     cv2.circle(frame, (int(x),int(y)), int(radius), (0,255,255), 2)
             else:
                 command = states.States.NA
+                continue
 
         # Set speed and direction state based on position of x coordinate within
         # the frame
@@ -134,24 +156,6 @@ while True:
             command = states.States.FR
         else:
             command = states.States.NA
-    
-    sentTemp = ""
-    # Send command to the Arduino only if state has changed
-    if prev_command != command:
-        temp = tplibutils.send(serial_obj, command)
-        print temp
-        report = {}
-        report['temperature'] = temp
-        if float(temp) < 60 and sentTemp == "" or sentTemp == "HOT" :
-            report['extreme'] = 'COLD'
-            sentTemp = "COLD"
-            requests.post('https://maker.ifttt.com/use/bM5YJkdQHK8RgoS6K6f4na', data=report)
-        elif float(temp) > 90 and sentTemp == "" or sentTemp == "COLD":
-            print 'Got hot!'
-            report['extreme'] = 'HOT'
-            sentTemp = "HOT"
-            requests.post('https://maker.ifttt.com/use/bM5YJkdQHK8RgoS6K6f4na', data=report)
-        prev_command = command
 
     # Display results on video frame
     cv2.imshow('Video', frame)

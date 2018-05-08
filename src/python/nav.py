@@ -43,27 +43,32 @@ process_this_frame = True
 prev_guide = 'Stop'
 prev_command = states.States.STOP
 command = states.States.NA
+frame_count = 0
 
 while True:
     # Send command to the Arduino only if state has changed
     if prev_command != command:
-        temp = arduino.send(serial_obj, command)
-        temp = float(temp)
-
-        if temp < 60:
-            pyfttt.send_event(
-                IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
-        elif temp > 90:
-            pyfttt.send_event(
-                IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
-
         prev_command = command
+        temp = arduino.send(serial_obj, command)
+        
+        try:
+            temp = float(temp)
+            if temp < 60:
+                print 'its too cold'
+                pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
+            elif temp > 90:
+                print 'its too hot'
+                pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
+        except:
+            print 'Got ', temp, 'Cannot convert to float'
 
     # Query Firebase for new instruction
-    instruction = fire_base.get_instruction()
+    if frame_count % 60 == 0:
+        instruction = fire_base.get_instruction()
 
     # Extract frame from video feed
     _, frame = camera.read()
+    frame_count = frame_count + 1
 
     if not instruction:
         command = states.States.NA
@@ -180,7 +185,7 @@ while True:
     # Display results on video frame if display settings chosen
     if args.display:
         cv2.imshow('Video', frame)
-
+            
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break

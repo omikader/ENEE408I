@@ -1,3 +1,4 @@
+import argparse
 import cv2
 import face_recognition
 import numpy as np
@@ -7,6 +8,16 @@ import utils.arduino as arduino
 import utils.face_rec as face_rec
 import utils.fire_base as fire_base
 import utils.states as states
+
+parser = argparse.ArgumentParser(description='Navigation Script')
+
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--display', dest='display', action='store_true',
+                   help='display video feed using cv2.imshow')
+group.add_argument('--no-display', dest='display', action='store_false',
+                   help='suppress video feed display')
+
+args = parser.parse_args()
 
 # Define web camera
 camera = cv2.VideoCapture(1)
@@ -29,24 +40,26 @@ regions = [float(i) * frame_width / 5 for i in range(1, 6)]
 
 # Define starting values
 process_this_frame = True
-prev_command = states.States.NA
-command = states.States.NA
 prev_guide = 'Stop'
+prev_command = states.States.STOP
+command = states.States.NA
 
 while True:
     # Send command to the Arduino only if state has changed
     if prev_command != command:
         temp = arduino.send(serial_obj, command)
         temp = float(temp)
-        
+
         if temp < 60:
-            pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
+            pyfttt.send_event(
+                IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
         elif temp > 90:
-            pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
-            
+            pyfttt.send_event(
+                IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
+
         prev_command = command
-    
-    # Query Firebase for instruction
+
+    # Query Firebase for new instruction
     instruction = fire_base.get_instruction()
 
     # Extract frame from video feed
@@ -55,15 +68,20 @@ while True:
     if not instruction:
         command = states.States.NA
         continue
-        
+
     elif instruction.keys()[0] == 'Follow':
         guide = instruction['Follow']
+
+        if guide == 'Stop':
+            command = states.States.STOP
+            continue
 
         if guide != prev_guide:
             hsv_upper = 0
             hsv_lower = 0
             prev_guide = guide
-        
+
+        # Only use encodings belonging to guide
         indices = [i for i, x in enumerate(known_face_names) if x == guide]
         guide_face_encodings = [known_face_encodings[i] for i in indices]
         found_guide = False
@@ -76,7 +94,8 @@ while True:
 
         # Only process every other frame to save time
         if process_this_frame:
-            # Find all the faces and face encodings in the current frame of video
+            # Find all the faces and face encodings in the current frame of
+            # video
             face_locations = face_recognition.face_locations(rgb_small_frame)
             face_encodings = face_recognition.face_encodings(
                 rgb_small_frame, face_locations)
@@ -106,8 +125,8 @@ while True:
 
             # Draw a box around the face
             x = (left + right)/2
-            cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-            cv2.rectangle(frame, (left, top + 250), (right, bottom + 250), (0, 255, 0), 2)
+            cv2.rectangle(frame, (left,top), (right,bottom), (0,0,255), 2)
+            cv2.rectangle(frame, (left,top+250), (right,bottom+250), (0,255,0), 2)
 
             # Define ROI (region of interest) on guide's shirt
             roi = hsv[(top + 250):(bottom + 250) , left:right]
@@ -127,9 +146,10 @@ while True:
                 mask = cv2.inRange(hsv, hsv_lower, hsv_upper)
                 mask = cv2.erode(mask, None, iterations=2)
                 mask = cv2.dilate(mask, None, iterations=2)
-                
+
                 # Find contours in the mask
-                cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
+                cnts = cv2.findContours(
+                    mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[-2]
 
                 # Only proceed if at least one contour was found
                 if len(cnts) > 0:
@@ -157,8 +177,9 @@ while True:
         else:
             command = states.States.NA
 
-    # Display results on video frame
-    cv2.imshow('Video', frame)
+    # Display results on video frame if display settings chosen
+    if args.display:
+        cv2.imshow('Video', frame)
 
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):

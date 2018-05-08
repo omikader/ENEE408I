@@ -2,3 +2,7 @@
 *.pyc
 img/
 nav_3/
+classifiers/
+misc/camera.py
+misc/peopledetect.py
+misc/my_ball_tracking.py

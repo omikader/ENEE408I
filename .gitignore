@@ -1,8 +1,8 @@
 .DS_Store
 *.pyc
 img/
-arduino/nav/nav_3/
-src/pythonclassifiers/
-src/python/misc/camera.py
-src/python/misc/peopledetect.py
-src/pythonmisc/my_ball_tracking.py
+nav_3/
+classifiers/
+camera.py
+peopledetect.py
+my_ball_tracking.py

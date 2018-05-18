@@ -17,4 +17,4 @@ Documentation regarding the project's overall [goals and guidelines](docs/projec
 
 ## Demonstration
 
-A video demonstration of the robot in action can be found under the `demo/` subdirectory. You can also view the demo on [YouTube](https://www.youtube.com/watch?v=58ssK7U3kx4)
+A video demonstration of the robot in action can be found under the `demo/` subdirectory. You can also view the demo on [YouTube](https://www.youtube.com/watch?v=58ssK7U3kx4).

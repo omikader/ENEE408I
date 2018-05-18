@@ -50,14 +50,12 @@ while True:
     if prev_command != command:
         prev_command = command
         temp = arduino.send(serial_obj, command)
-        
+
         try:
             temp = float(temp)
             if temp < 60:
-                print 'its too cold'
                 pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'COLD')
             elif temp > 90:
-                print 'its too hot'
                 pyfttt.send_event(IFTTT_API_KEY, 'temperature_too_extreme', temp, 'HOT')
         except:
             print 'Got ', temp, 'Cannot convert to float'
@@ -185,7 +183,7 @@ while True:
     # Display results on video frame if display settings chosen
     if args.display:
         cv2.imshow('Video', frame)
-            
+
     # Hit 'q' on the keyboard to quit
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
